@@ -2,28 +2,37 @@ use eframe::egui::{self};
 
 #[derive(Default)]
 pub struct GraphWindow {
-    nodes: Vec<egui::Pos2>,
+    pub nodes: Vec<egui::Pos2>,
     screen_origin: egui::Pos2,
     hovered_node: Option<usize>,
     dragged_node: Option<usize>,
 }
 
+#[derive(Default)]
+pub struct GraphWindowResponse {
+    pub updated: bool,
+}
+
 impl GraphWindow {
-    pub fn ui(&mut self, ui: &mut egui::Ui) {
+    pub fn ui(&mut self, ui: &mut egui::Ui) -> GraphWindowResponse {
         let (response, painter) = ui.allocate_painter(
             ui.available_size_before_wrap(),
             egui::Sense::click_and_drag(),
         );
         self.screen_origin = painter.clip_rect().left_top();
-        self.logic(&response);
+        let response = self.logic(&response);
         self.paint_complete_edges(&painter);
         self.paint_nodes(&painter);
+
+        response
     }
 
-    fn logic(&mut self, response: &egui::Response) {
-        self.update_hovered_node(response);
-        self.create_node(response);
-        self.move_node(response);
+    fn logic(&mut self, response: &egui::Response) -> GraphWindowResponse {
+        let updated = self.update_hovered_node(response)
+            || self.create_node(response)
+            || self.move_node(response);
+
+        GraphWindowResponse { updated }
     }
 
     fn paint_nodes(&self, painter: &egui::Painter) {
@@ -56,24 +65,27 @@ impl GraphWindow {
         });
     }
 
-    fn create_node(&mut self, response: &egui::Response) {
+    fn create_node(&mut self, response: &egui::Response) -> bool {
         if let Some(interact_pos) = response.interact_pointer_pos()
             && response.clicked()
         {
             self.nodes.push(interact_pos - self.screen_origin.to_vec2());
+            return true;
         }
+        false
     }
 
-    fn update_hovered_node(&mut self, response: &egui::Response) {
+    fn update_hovered_node(&mut self, response: &egui::Response) -> bool {
         if let Some(hover_pos) = response.hover_pos() {
             self.hovered_node = self
                 .nodes
                 .iter()
                 .position(|n| hover_pos.distance(self.screen_origin + (*n).to_vec2()) < 10.0);
         }
+        false
     }
 
-    fn move_node(&mut self, response: &egui::Response) {
+    fn move_node(&mut self, response: &egui::Response) -> bool {
         if self.dragged_node.is_none()
             && response.drag_started()
             && let Some(i) = self.hovered_node
@@ -89,6 +101,8 @@ impl GraphWindow {
             && response.dragged()
         {
             self.nodes[i] += response.drag_delta();
+            return true;
         }
+        false
     }
 }
