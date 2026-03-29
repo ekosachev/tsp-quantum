@@ -105,4 +105,11 @@ impl GraphWindow {
         }
         false
     }
+
+    pub fn distance_matrix(&self) -> Vec<Vec<f64>> {
+        self.nodes
+            .iter()
+            .map(|u| self.nodes.iter().map(|v| u.distance(*v) as f64).collect())
+            .collect()
+    }
 }

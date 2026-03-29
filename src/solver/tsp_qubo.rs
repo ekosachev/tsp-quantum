@@ -8,6 +8,7 @@ pub struct QUBO {
 struct QuboWeights {
     visit_once: f64,
     one_city_in_position: f64,
+    distance: f64,
 }
 
 impl Default for QuboWeights {
@@ -15,6 +16,7 @@ impl Default for QuboWeights {
         Self {
             visit_once: 1.0,
             one_city_in_position: 1.0,
+            distance: 1.0,
         }
     }
 }
@@ -45,11 +47,12 @@ impl QUBO {
         self.state[index_b] += weight;
     }
 
-    pub fn update_weights(&mut self) {
+    pub fn update_weights(&mut self, distance_matrix: Vec<Vec<f64>>) {
         self.state = vec![0.0; self.num_variables().pow(2)];
 
         self.visit_once_constraint();
         self.one_city_in_position_constraint();
+        self.distance_constraint(distance_matrix);
     }
 
     fn visit_once_constraint(&mut self) {
@@ -79,6 +82,19 @@ impl QUBO {
                         other_var_index,
                         2.0 * self.weights.one_city_in_position,
                     );
+                }
+            }
+        }
+    }
+
+    fn distance_constraint(&mut self, distance_matrix: Vec<Vec<f64>>) {
+        for t in 0..self.num_cities {
+            for i in 0..self.num_cities {
+                for j in 0..self.num_cities {
+                    let t2 = (t + 1) % self.num_cities;
+                    let var_a = self.get_var_index(i, t);
+                    let var_b = self.get_var_index(j, t2);
+                    self.add_quadratic(var_a, var_b, distance_matrix[i][j] * self.weights.distance);
                 }
             }
         }
