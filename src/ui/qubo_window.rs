@@ -19,6 +19,7 @@ impl QuboWindow {
             .view_aspect(1.0)
             .show_grid(false)
             .show_crosshair(false)
+            .invert_y(true)
             .show(ui, |plot_ui| plot_ui.heatmap(heatmap));
     }
 }
