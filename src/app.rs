@@ -35,7 +35,7 @@ impl TspQuantumApp {
         self.qubo
             .update_weights(self.graph_window.distance_matrix());
 
-        self.qubo_window.n = self.qubo.num_variables();
+        self.qubo_window.n_cities = self.qubo.num_cities;
         self.qubo_window.state = self.qubo.state.clone();
     }
 }
