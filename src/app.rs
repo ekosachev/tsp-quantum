@@ -31,10 +31,10 @@ impl TspQuantumApp {
     }
 
     fn update_qubo(&mut self, nodes: Vec<egui::Pos2>) {
-        self.qubo.size = nodes.len();
-        self.qubo.state = vec![false; self.qubo.size.pow(2)];
+        self.qubo.num_cities = nodes.len();
+        self.qubo.state = vec![0.0; self.qubo.num_variables().pow(2)];
 
-        self.qubo_window.n = self.qubo.size;
+        self.qubo_window.n = self.qubo.num_variables();
         self.qubo_window.state = self.qubo.state.iter().map(|v| f64::from(*v)).collect();
     }
 }

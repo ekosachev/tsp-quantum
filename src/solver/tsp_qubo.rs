@@ -1,12 +1,11 @@
 #[derive(Default)]
 pub struct QUBO {
-    pub size: usize,
-    pub state: Vec<bool>,
+    pub num_cities: usize,
+    pub state: Vec<f32>,
 }
 
 impl QUBO {
-    pub fn with_size(mut self, size: usize) -> Self {
-        self.size = size;
-        self
+    pub fn num_variables(&self) -> usize {
+        self.num_cities.pow(2)
     }
 }
