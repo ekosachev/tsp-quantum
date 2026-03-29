@@ -6,6 +6,7 @@ pub struct TspQuantumApp {
     graph_window: ui::GraphWindow,
     graph_window_response: ui::GraphWindowResponse,
     qubo: QUBO,
+    qubo_window: ui::QuboWindow,
 }
 
 impl App for TspQuantumApp {
@@ -20,6 +21,7 @@ impl App for TspQuantumApp {
         egui::Window::new("Graph").show(ui.ctx(), |ui| {
             self.graph_window_response = self.graph_window.ui(ui)
         });
+        egui::Window::new("QUBO").show(ui.ctx(), |ui| self.qubo_window.ui(ui));
     }
 }
 
