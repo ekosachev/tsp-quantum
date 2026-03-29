@@ -2,11 +2,14 @@ use eframe::egui;
 use egui_plot::{Heatmap, Plot};
 
 #[derive(Default)]
-pub struct QuboWindow {}
+pub struct QuboWindow {
+    pub state: Vec<f64>,
+    pub n: usize,
+}
 
 impl QuboWindow {
     pub fn ui(&mut self, ui: &mut egui::Ui) {
-        let heatmap = Heatmap::new(vec![0.0, 0.25, 0.5, 0.75], 2);
+        let heatmap = Heatmap::new(self.state.clone(), self.n);
 
         Plot::new("qubo_plot")
             .allow_zoom(false)

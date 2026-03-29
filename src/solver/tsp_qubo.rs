@@ -1,6 +1,7 @@
 #[derive(Default)]
 pub struct QUBO {
-    size: usize,
+    pub size: usize,
+    pub state: Vec<bool>,
 }
 
 impl QUBO {
