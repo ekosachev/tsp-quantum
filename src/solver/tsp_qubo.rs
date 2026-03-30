@@ -2,13 +2,13 @@
 pub struct QUBO {
     pub num_cities: usize,
     pub state: Vec<f64>,
-    weights: QuboWeights,
+    pub weights: QuboWeights,
 }
 
-struct QuboWeights {
-    visit_once: f64,
-    one_city_in_position: f64,
-    distance: f64,
+pub struct QuboWeights {
+    pub visit_once: f64,
+    pub one_city_in_position: f64,
+    pub distance: f64,
 }
 
 impl Default for QuboWeights {

@@ -1,4 +1,7 @@
-use crate::{solver::tsp_qubo::QUBO, ui};
+use crate::{
+    solver::tsp_qubo::QUBO,
+    ui::{self, QuboWeightControls},
+};
 use eframe::{App, Frame, egui};
 
 #[derive(Default)]
@@ -7,6 +10,7 @@ pub struct TspQuantumApp {
     graph_window_response: ui::GraphWindowResponse,
     qubo: QUBO,
     qubo_window: ui::QuboWindow,
+    qubo_window_response: ui::QuboWindowResponse,
 }
 
 impl App for TspQuantumApp {
@@ -15,13 +19,19 @@ impl App for TspQuantumApp {
             let nodes = self.graph_window.nodes.clone();
             self.update_qubo(nodes);
         }
+
+        if self.qubo_window_response.update_weights {
+            self.update_qubo_weights(self.qubo_window.weight_controls);
+        }
     }
 
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut Frame) {
         egui::Window::new("Graph").show(ui.ctx(), |ui| {
             self.graph_window_response = self.graph_window.ui(ui)
         });
-        egui::Window::new("QUBO").show(ui.ctx(), |ui| self.qubo_window.ui(ui));
+        egui::Window::new("QUBO").show(ui.ctx(), |ui| {
+            self.qubo_window_response = self.qubo_window.ui(ui)
+        });
     }
 }
 
@@ -36,6 +46,16 @@ impl TspQuantumApp {
             .update_weights(self.graph_window.distance_matrix());
 
         self.qubo_window.n_cities = self.qubo.num_cities;
+        self.qubo_window.state = self.qubo.state.clone();
+    }
+
+    fn update_qubo_weights(&mut self, weight_controls: QuboWeightControls) {
+        self.qubo.weights.visit_once = weight_controls.visit_once;
+        self.qubo.weights.one_city_in_position = weight_controls.one_at_a_time;
+        self.qubo.weights.distance = weight_controls.distance;
+
+        self.qubo
+            .update_weights(self.graph_window.distance_matrix());
         self.qubo_window.state = self.qubo.state.clone();
     }
 }
