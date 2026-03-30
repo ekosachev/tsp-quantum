@@ -36,18 +36,25 @@ impl GraphWindow {
     }
 
     fn paint_nodes(&self, painter: &egui::Painter) {
-        self.nodes.iter().for_each(|n| {
+        self.nodes.iter().enumerate().for_each(|(i, n)| {
             let node_color = self
                 .hovered_node
-                .map(|i| {
-                    if self.nodes[i] == *n {
-                        egui::Color32::LIGHT_GREEN
+                .map(|j| {
+                    if i == j {
+                        egui::Color32::DARK_RED
                     } else {
-                        egui::Color32::GREEN
+                        egui::Color32::DARK_GRAY
                     }
                 })
-                .unwrap_or(egui::Color32::GREEN);
-            painter.circle_filled(self.screen_origin + n.to_vec2(), 5.0, node_color);
+                .unwrap_or(egui::Color32::DARK_GRAY);
+            painter.circle_filled(self.screen_origin + n.to_vec2(), 15.0, node_color);
+            painter.text(
+                self.screen_origin + n.to_vec2(),
+                egui::Align2::CENTER_CENTER,
+                i.to_string(),
+                egui::FontId::monospace(12.0),
+                egui::Color32::WHITE,
+            );
         });
     }
 
@@ -80,7 +87,7 @@ impl GraphWindow {
             self.hovered_node = self
                 .nodes
                 .iter()
-                .position(|n| hover_pos.distance(self.screen_origin + (*n).to_vec2()) < 10.0);
+                .position(|n| hover_pos.distance(self.screen_origin + (*n).to_vec2()) < 15.0);
         }
         false
     }
