@@ -1,5 +1,5 @@
 use crate::{
-    solver::tsp_qubo::QUBO,
+    solver::{ising_model::IsingModel, tsp_qubo::QUBO},
     ui::{self, QuboWeightControls},
 };
 use eframe::{App, Frame, egui};
@@ -12,6 +12,7 @@ pub struct TspQuantumApp {
     qubo_window: ui::QuboWindow,
     qubo_window_response: ui::QuboWindowResponse,
     ising_window: ui::IsingWindow,
+    ising_model: IsingModel,
 }
 
 impl App for TspQuantumApp {
@@ -23,6 +24,7 @@ impl App for TspQuantumApp {
 
         if self.qubo_window_response.update_weights {
             self.update_qubo_weights(self.qubo_window.weight_controls);
+            self.update_ising_model();
         }
     }
 
@@ -59,5 +61,10 @@ impl TspQuantumApp {
         self.qubo
             .update_weights(self.graph_window.distance_matrix());
         self.qubo_window.state = self.qubo.state.clone();
+    }
+
+    fn update_ising_model(&mut self) {
+        self.ising_model
+            .load_qubo(self.qubo.num_variables(), &self.qubo.state);
     }
 }
