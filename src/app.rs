@@ -11,6 +11,7 @@ pub struct TspQuantumApp {
     qubo: QUBO,
     qubo_window: ui::QuboWindow,
     qubo_window_response: ui::QuboWindowResponse,
+    ising_window: ui::IsingWindow,
 }
 
 impl App for TspQuantumApp {
@@ -32,6 +33,7 @@ impl App for TspQuantumApp {
         egui::Window::new("QUBO").show(ui.ctx(), |ui| {
             self.qubo_window_response = self.qubo_window.ui(ui)
         });
+        egui::Window::new("Ising").show(ui.ctx(), |ui| self.ising_window.ui(ui));
     }
 }
 
